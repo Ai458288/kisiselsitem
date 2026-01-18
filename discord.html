@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Discord İstatistik</title>
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial}
+html,body{
+    width:100%;
+    height:100%;
+    background:radial-gradient(circle at top,#1a1f3c,#0b0d13 70%);
+    color:#fff;
+    overflow:hidden;
+}
+.container{
+    height:100%;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    gap:25px;
+    animation:fade .8s ease;
+}
+@keyframes fade{
+    from{opacity:0;transform:translateY(30px)}
+    to{opacity:1}
+}
+h1{color:#5865F2}
+
+.stats{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:20px;
+    width:90%;
+    max-width:800px;
+}
+.card{
+    background:#18181d;
+    padding:25px;
+    border-radius:14px;
+    text-align:center;
+    box-shadow:0 0 25px rgba(0,0,0,.6);
+}
+.value{
+    font-size:32px;
+    color:#5865F2;
+    margin-top:10px;
+}
+.back{
+    background:transparent;
+    border:2px solid #5865F2;
+    color:#5865F2;
+    padding:10px 30px;
+    border-radius:10px;
+    cursor:pointer;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+    <h1>Discord Sunucu Durumu</h1>
+
+    <div class="stats">
+        <div class="card">
+            Online Üyeler
+            <div class="value" id="online">–</div>
+        </div>
+        <div class="card">
+            Kanal Sayısı
+            <div class="value" id="channels">–</div>
+        </div>
+        <div class="card">
+            Ses Kanalları
+            <div class="value" id="voice">–</div>
+        </div>
+        <div class="card">
+            Sesteki Kişiler
+            <div class="value" id="voiceUsers">–</div>
+        </div>
+    </div>
+
+    <button class="back" onclick="location.href='index.html'">⬅ Ana Sayfa</button>
+</div>
+
+<script>
+const SERVER_ID = "SUNUCU_ID_BURAYA"; // 👈 BURAYA YAZ
+
+fetch(`https://discord.com/api/guilds/${SERVER_ID}/widget.json`)
+.then(res => res.json())
+.then(data => {
+    document.getElementById("online").innerText = data.presence_count;
+
+    document.getElementById("channels").innerText = data.channels.length;
+
+    const voiceChannels = data.channels.filter(c => c.type === 2);
+    document.getElementById("voice").innerText = voiceChannels.length;
+
+    let users = 0;
+    voiceChannels.forEach(vc => {
+        users += vc.users ? vc.users.length : 0;
+    });
+    document.getElementById("voiceUsers").innerText = users;
+})
+.catch(() => {
+    document.querySelector(".container").innerHTML = "Widget kapalı veya erişilemiyor";
+});
+</script>
+
+</body>
+</html>
